@@ -4,7 +4,7 @@
     if(strlen($_SESSION['login'])==0){ 
         header('location:index.php');
     }else {
-        $query=mysqli_query($con,"select * from anggota where email='".$_SESSION['login']."'");
+        $query=mysqli_query($con,"call getID('".$_SESSION['login']."')");
         $row=mysqli_fetch_array($query);
         $id = $row['id_member'];
     ?>
@@ -57,7 +57,9 @@
 							<div class="progress-data">
 								<div id="chart"></div>
 							</div>
-                            <?php 
+							<?php 
+								mysqli_free_result($query);
+								mysqli_next_result($con);
                                 $q1 = mysqli_query($con, "call cek_jumlah_peminjaman_user($id)");
                                 $rowpinjaman = mysqli_fetch_array($q1);
                             ?>
@@ -107,60 +109,72 @@
 					</div>
 				</div>
 			</div>
-            <br> 
-            <div class="header-left">
-			<div class="menu-icon dw dw-menu"></div>
-			<div class="search-toggle-icon dw dw-search2" data-toggle="header_search"></div>
-			<div class="header-search">
-				<form>
-					<div class="form-group mb-0">
-						<i class="dw dw-search2 search-icon"></i>
-						    <input type="text" id="myInput" class="form-control search-input" onkeyup="myFunction()" placeholder="Cari judul buku" title="Type in a name">
-					    </div>
-				    </form>
-			    </div>
-		    </div>
             <br>
-            <table class="table text-center bg-light" id="myTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Judul Buku</th>
-                        <th scope="col">Tanggal Peminjaman</th>
-                        <th scope="col">Tanggal Pengembalian</th>
-                        <th scope="col">Denda</th>
-						<th scope="col">Keterangan</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php 
-                        mysqli_free_result($rowpinjaman3);
-                        mysqli_next_result($con); 
-                        $q= "call history_peminjaman($id)";
-                        $query5=mysqli_query($con, $q);
-                        while($rowbuku = mysqli_fetch_array($query5)){ ?>
-                            <tr>
-                                <td scope="row"><?php echo htmlentities($rowbuku['judul_buku'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['tanggal_peminjaman'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['tanggal_pengembalian1'])?></td>
-								<td scope="row"><?php 
-									if($rowbuku['status_peminjaman']=="reserved"){
-										echo htmlentities("-");
-									}else{ 
-										echo htmlentities($rowbuku['denda']);
-									}?></td>
-                                <?php 
-                                    if(!$rowbuku['denda']=='-'){ ?>
-                                            <td scope="row">Segera Kembalikan Buku</a></td>
-                                    <?php }else{ ?>
-                                        <td scope="row">-</a></td>
-                                    <?php } ?>
-                                <td scope="row"><button type="button" class="btn btn-outline-success"><?php echo htmlentities($rowbuku['status_peminjaman'])?></button></td>
-                            </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-            
+			<div class="card-box">
+				<div style="padding:20px;">
+					<div class="weight-600 font-30 text-blue">Riwayat Peminjaman Buku</div>
+				</div>
+				<!-- <div class="header-left">
+				<div class="menu-icon dw dw-menu"></div>
+				<div class="search-toggle-icon dw dw-search2" data-toggle="header_search"></div>
+				<div class="header-search">
+					<form>
+						<div class="form-group mb-0">
+							<i class="dw dw-search2 search-icon"></i>
+								<input type="text" id="myInput" class="form-control search-input" onkeyup="myFunction()" placeholder="Cari judul buku" title="Type in a name">
+							</div>
+						</form>
+					</div>
+				</div> -->
+				<table class="table table-striped text-center bg-light" id="myTable">
+					<thead>
+						<tr>
+							<th scope="col">Judul Buku</th>
+							<th scope="col">Tanggal Peminjaman</th>
+							<th scope="col">Tanggal Pengembalian</th>
+							<th scope="col">Denda</th>
+							<th scope="col">Keterangan</th>
+							<th scope="col">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php 
+							mysqli_free_result($rowpinjaman3);
+							mysqli_next_result($con); 
+							$q= "call history_peminjaman($id)";
+							$query5=mysqli_query($con, $q);
+							while($rowbuku = mysqli_fetch_array($query5)){ ?>
+								<tr>
+									<td scope="row"><?php echo htmlentities($rowbuku['judul_buku'])?></td>
+									<td scope="row"><?php echo htmlentities($rowbuku['tanggal_peminjaman'])?></td>
+									<td scope="row"><?php echo htmlentities($rowbuku['tanggal_pengembalian1'])?></td>
+									<td scope="row"><?php 
+										if($rowbuku['status_peminjaman']=="reserved"){
+											echo htmlentities("-");
+										}else{ 
+											echo htmlentities($rowbuku['denda']);
+										}?></td>
+									<?php 
+										if($rowbuku['denda'] == '-' || $rowbuku['status_peminjaman']=="reserved" || $rowbuku['status_peminjaman']=="returned" ){ ?>
+												<td scope="row">-</a></td>
+										<?php }else{ ?>
+											<td scope="row" style="color:red">Segera Kembalikan Buku</a></td>
+										<?php } ?>
+									<td scope="row"><?php 
+										if($rowbuku['status_peminjaman']=="reserved"){ ?>
+											<button type="button" class="btn btn-success"><?php echo htmlentities($rowbuku['status_peminjaman'])?></button>
+										<?php }else if($rowbuku['status_peminjaman']=="issued"){ ?>
+											<button type="button" class="btn btn-warning"><?php echo htmlentities($rowbuku['status_peminjaman'])?></button>
+										<?php }else{ ?>
+											<button type="button" class="btn btn-info"><?php echo htmlentities($rowbuku['status_peminjaman'])?></button>
+										<?php } ?></td>
+									</td>
+								</tr>
+						<?php } ?>
+					</tbody>
+				</table>
+			</div>
+			<br>
 			<div class="footer-wrap pd-20 mb-20 card-box">
 				DeskApp - Bootstrap 4 Admin Template By <a href="https://github.com/dropways" target="_blank">Ankit Hingarajiya</a>
 			</div>

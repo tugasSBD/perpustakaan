@@ -7,7 +7,8 @@
         unset($_GET['messsage']);
     }
     if(isset($_POST['submit'])){
-        $query = "SELECT * FROM anggota WHERE email='".$_POST['email']."' and password='".md5($_POST['password'])."'";
+		$name = $_POST['email'];
+        $query = "SELECT * FROM anggota WHERE email='$name' and password='".md5($_POST['password'])."'";
         $ret=mysqli_query($con,$query);
 		$num=mysqli_fetch_array($ret); 
 		echo $num;
@@ -25,7 +26,7 @@
             header("location:http://$host$uri/user/$extra");
             exit();
         }else{
-			echo "gagal";
+			echo $query;
             $_SESSION['login']=$_POST['username'];	
             $uip=$_SERVER['REMOTE_ADDR'];
             $status=0;

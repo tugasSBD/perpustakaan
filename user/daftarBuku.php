@@ -4,7 +4,7 @@
     if(strlen($_SESSION['login'])==0){ 
         header('location:index.php');
     }else {
-        $query=mysqli_query($con,"select * from anggota where email='".$_SESSION['login']."'");
+        $query=mysqli_query($con,"call getID('".$_SESSION['login']."')");
 		$row=mysqli_fetch_array($query)
     ?>
 <!DOCTYPE html>
@@ -49,48 +49,43 @@
 					</div>
 				</div>
 			</div>
-            <div class="header-left">
-			<div class="menu-icon dw dw-menu"></div>
-			<div class="search-toggle-icon dw dw-search2" data-toggle="header_search"></div>
-			<div class="header-search">
-				<form>
-					<div class="form-group mb-0">
-						<i class="dw dw-search2 search-icon"></i>
-						    <input type="text" id="myInput" class="form-control search-input" onkeyup="myFunction()" placeholder="Cari judul buku" title="Type in a name">
-					    </div>
-				    </form>
-			    </div>
-		    </div>
-            <br>
-            <table class="table text-center bg-light" id="myTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Judul Buku</th>
-                        <th scope="col">Kategori</th>
-                        <th scope="col">Publisher</th>
-                        <th scope="col">ISBN</th>
-                        <th scope="col">Jumlah Stock</th>
-						<th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php 
-                        $q= "SELECT id_buku,nama_publisher,deskripsi_kategori,judul_buku,isbn,jumlah_buku FROM BUKU AS A INNER JOIN publisher AS B ON  A.id_publisher=B.id_publisher INNER JOIN kategori_buku AS C ON A.kode_kategori=C.kode_kategori";
-                        $query=mysqli_query($con, $q);
-                        
-                        while($rowbuku = mysqli_fetch_array($query)){ ?>
-                            <tr>
-                                <td scope="row"><?php echo htmlentities($rowbuku['judul_buku'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['deskripsi_kategori'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['nama_publisher'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['isbn'])?></td>
-                                <td scope="row"><?php echo htmlentities($rowbuku['jumlah_buku'])?></td>
-								<td><a href="reservedBook.php?kode=<?php echo htmlentities($rowbuku['id_buku']) ?>"><button type="button" class="btn btn-outline-success">Booking</button></a></td>
-                            </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
-            
+			<div class="card-box mb-30">
+					<div class="pd-20">
+						<h4 class="text-blue h4">Daftar Buku</h4>
+					</div>
+					<div class="pb-20">
+						<table class="data-table table stripe hover nowrap">
+							<thead>
+								<tr>
+									<th scope="col">Judul Buku</th>
+									<th scope="col">Kategori</th>
+									<th scope="col">Publisher</th>
+									<th scope="col">ISBN</th>
+									<th scope="col">Jumlah Stock</th>
+									<th scope="col">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php 
+									mysqli_free_result($query);
+									mysqli_next_result($con);
+									$q= "SELECT id_buku,nama_publisher,deskripsi_kategori,judul_buku,isbn,jumlah_buku FROM BUKU AS A INNER JOIN publisher AS B ON  A.id_publisher=B.id_publisher INNER JOIN kategori_buku AS C ON A.kode_kategori=C.kode_kategori";
+									$query=mysqli_query($con, $q);
+									
+									while($rowbuku = mysqli_fetch_array($query)){ ?>
+										<tr>
+											<td scope="row"><?php echo htmlentities($rowbuku['judul_buku'])?></td>
+											<td scope="row"><?php echo htmlentities($rowbuku['deskripsi_kategori'])?></td>
+											<td scope="row"><?php echo htmlentities($rowbuku['nama_publisher'])?></td>
+											<td scope="row"><?php echo htmlentities($rowbuku['isbn'])?></td>
+											<td scope="row"><?php echo htmlentities($rowbuku['jumlah_buku'])?></td>
+											<td><a href="reservedBook.php?kode=<?php echo htmlentities($rowbuku['id_buku']) ?>"><button type="button" class="btn btn-outline-success">Booking</button></a></td>
+										</tr>
+								<?php } ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			<div class="footer-wrap pd-20 mb-20 card-box">
 				DeskApp - Bootstrap 4 Admin Template By <a href="https://github.com/dropways" target="_blank">Ankit Hingarajiya</a>
 			</div>
@@ -121,11 +116,18 @@
 	<script src="../vendors/scripts/script.min.js"></script>
 	<script src="../vendors/scripts/process.js"></script>
 	<script src="../vendors/scripts/layout-settings.js"></script>
-	<script src="../src/plugins/apexcharts/apexcharts.min.js"></script>
 	<script src="../src/plugins/datatables/js/jquery.dataTables.min.js"></script>
 	<script src="../src/plugins/datatables/js/dataTables.bootstrap4.min.js"></script>
 	<script src="../src/plugins/datatables/js/dataTables.responsive.min.js"></script>
 	<script src="../src/plugins/datatables/js/responsive.bootstrap4.min.js"></script>
+	<script src="../src/plugins/datatables/js/dataTables.buttons.min.js"></script>
+	<script src="../src/plugins/datatables/js/buttons.bootstrap4.min.js"></script>
+	<script src="../src/plugins/datatables/js/buttons.print.min.js"></script>
+	<script src="../src/plugins/datatables/js/buttons.html5.min.js"></script>
+	<script src="../src/plugins/datatables/js/buttons.flash.min.js"></script>
+	<script src="../src/plugins/datatables/js/pdfmake.min.js"></script>
+	<script src="../src/plugins/datatables/js/vfs_fonts.js"></script>
+	<script src="../vendors/scripts/datatable-setting.js"></script></body>
 	<script src="../vendors/scripts/dashboard.js"></script>
 </body>
 </html>

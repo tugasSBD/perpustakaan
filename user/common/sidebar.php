@@ -26,6 +26,11 @@
                         <span class="micon dw dw-list3"></span><span class="mtext">Riwayat Peminjaman</span>
                     </a>
                 </li>
+                <li>
+                    <a href="pembayaranIuran.php" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-money-2"></span><span class="mtext">Iuran Berlangganan</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
